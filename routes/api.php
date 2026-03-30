@@ -46,7 +46,8 @@ Route::post('/uploadFile', [FileUpload::class, 'fileUpload'])->name('fileUpload'
 Route::post('/workwithus', [WorkWithUsController::class, 'store']);
 Route::get('/workwithus', [WorkWithUsController::class, 'index']);
 
-
+Route::post('/contact-us/{contactUs}/read', [ContactUsController::class, 'markRead']);
+Route::post('/contact-us/{contactUs}/unread', [ContactUsController::class, 'markUnread']);
 
 Route::post('/donate/initiate', [DonationController::class, 'initiate']);
 Route::post('/donate/verify',   [DonationController::class, 'verify']);

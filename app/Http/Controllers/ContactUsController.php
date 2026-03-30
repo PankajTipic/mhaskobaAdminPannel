@@ -11,14 +11,63 @@ class ContactUsController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        // Retrieve all ContactUs records from the database
-        $contactUsRecords = ContactUs::all();
+    // public function index()
+    // {
+    //     // Retrieve all ContactUs records from the database
+    //     $contactUsRecords = ContactUs::all();
 
-        // Return the data as a JSON response
-        return response()->json($contactUsRecords);
+    //     // Return the data as a JSON response
+    //     return response()->json($contactUsRecords);
+    // }
+
+
+public function index(Request $request)
+{
+    $query = ContactUs::query()->latest();
+
+    // Status filter
+    if ($request->status === 'read') {
+        $query->where('is_read', 1);
     }
+
+    if ($request->status === 'unread') {
+        $query->where('is_read', 0);
+    }
+
+    // Search filter
+    if ($request->filled('search')) {
+        $search = $request->search;
+
+        $query->where(function ($q) use ($search) {
+            $q->where('name', 'like', "%$search%")
+              ->orWhere('email', 'like', "%$search%")
+              ->orWhere('phone', 'like', "%$search%")
+              ->orWhere('subject', 'like', "%$search%")
+              ->orWhere('message', 'like', "%$search%");
+        });
+    }
+
+    $contacts = $query->paginate($request->get('per_page', 15));
+
+    return response()->json($contacts);
+}
+
+
+// New endpoint – mark as read/unread
+public function markRead(ContactUs $contactUs)
+{
+    $contactUs->markAsRead();
+    return response()->json(['success' => true, 'message' => 'Marked as read']);
+}
+
+public function markUnread(ContactUs $contactUs)
+{
+    $contactUs->markAsUnread();
+    return response()->json(['success' => true, 'message' => 'Marked as unread']);
+}
+
+
+
 
     /**
      * Show the form for creating a new resource.
@@ -31,28 +80,7 @@ class ContactUsController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    // public function store(Request $request)
-    // {
-    //     // Validate the incoming request data
-    //     $validatedData = $request->validate([
-    //         'name' => 'required|string|max:50',
-    //         'email' => 'required|email|max:50',
-    //         'mobile' => 'required|string|max:13',
-    //         'queries' => 'nullable|string|max:255',
-    //     ]);
-
-    //     // Create a new ContactUs entry and store it in the database
-    //     $contactUs = ContactUs::create([
-    //         'name' => $validatedData['name'],
-    //         'email' => $validatedData['email'],
-    //         'mobile' => $validatedData['mobile'],
-    //         'queries' => $validatedData['queries'],
-    //     ]);
-
-    //     // Return a success response with the created resource
-    //     return response()->json(['message' => 'Contact data stored successfully', 'data' => $contactUs], 201);
-    // }
-
+   
 
     public function store(Request $request)
     {
