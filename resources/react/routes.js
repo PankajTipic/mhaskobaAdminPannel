@@ -29,6 +29,17 @@ const Charts = React.lazy(() => import('./views/charts/Charts'))
 
 const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
+
+const YadnyaList = React.lazy(() => import('./views/pages/Yadnya/YadnyaList'))
+const YadnyaAdd = React.lazy(() => import('./views/pages/Yadnya/AddYadnya'))
+const YadnyaPerson = React.lazy(() => import('./views/pages/Yadnya/YadnyaPersons'))
+
+
+const mahaprasad = React.lazy(() => import('./views/pages/Mahaprasad/MahaprasadAdmin'))
+
+
+
+
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
@@ -53,6 +64,13 @@ const routes = [
   { path: '/charts', name: 'Charts', element: Charts },
   { path: '/widgets', name: 'Widgets', element: Widgets },
   { path: '/category/work', name: 'Work', element: WorkWithUs },
+
+
+  { path: '/yadnyaList', name: 'Yadnya', element: YadnyaList },
+  { path: '/yadnyaAdd', name: 'Yadnya Add', element: YadnyaAdd },
+
+  { path: '/mahaprasad', name: 'Mahaprasad', element: mahaprasad },
+  { path: '/yadnyaPerson', name: 'Yadnya Persons List', element: YadnyaPerson },
 
 ]
 

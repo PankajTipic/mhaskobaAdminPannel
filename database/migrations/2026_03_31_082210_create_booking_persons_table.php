@@ -9,14 +9,14 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+   public function up()
 {
-    Schema::create('booking_users', function (Blueprint $table) {
+    Schema::create('booking_persons', function (Blueprint $table) {
         $table->id();
-        $table->string('email')->unique();
-        $table->string('otp')->nullable();
-        $table->boolean('is_verified')->default(false);
-        $table->timestamp('otp_expires_at')->nullable();
+        $table->foreignId('booking_id')->constrained('bookings')->cascadeOnDelete();
+        $table->string('name');
+        $table->string('email');
+        $table->integer('age');
         $table->timestamps();
     });
 }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('booking_users');
+        Schema::dropIfExists('booking_persons');
     }
 };

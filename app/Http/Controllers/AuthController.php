@@ -6,6 +6,12 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
+use App\Models\BookingUser;
+
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OtpMail;
+use Carbon\Carbon; 
+
 
 class AuthController extends Controller
 {
@@ -160,4 +166,49 @@ class AuthController extends Controller
         ]);
         return response($user,201);
     }
+
+
+
+
+
+
+
+
+
+
+public function sendOtp(Request $request)
+{
+    $request->validate(['email' => 'required|email']);
+    $otp = rand(100000, 999999);
+
+    $user = BookingUser::updateOrCreate(
+        ['email' => $request->email],
+        ['otp' => $otp, 'is_verified' => false, 'otp_expires_at' => Carbon::now()->addMinutes(10)]
+    );
+
+    Mail::to($request->email)->send(new OtpMail($otp));
+
+    return response()->json(['message' => 'OTP sent successfully']);
+}
+
+public function verifyOtp(Request $request)
+{
+    $request->validate(['email' => 'required|email', 'otp' => 'required|digits:6']);
+
+    $user = BookingUser::where('email', $request->email)
+                ->where('otp', $request->otp)
+                ->where('otp_expires_at', '>', Carbon::now())
+                ->first();
+
+    if (!$user) return response()->json(['error' => 'Invalid or expired OTP'], 400);
+
+    $user->update(['is_verified' => true, 'otp' => null]);
+
+    $token = $user->createToken('yadnya-booking')->plainTextToken;
+
+    return response()->json(['token' => $token, 'message' => 'Login successful']);
+}
+
+
+
 }

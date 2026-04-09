@@ -13,7 +13,18 @@ use App\Http\Controllers\WorkWithUsController;
 use App\Http\Controllers\RazorpayController;
 use App\Http\Controllers\PaymentController;
 
+use App\Http\Controllers\YadnyaController; 
+
+use App\Http\Controllers\BookingController;
+
+use App\Http\Controllers\MahaprasadController;
+
 use App\Http\Controllers\RazorpayPaymentController;
+
+
+
+
+
  
 Route::post('/create-order', [RazorpayController::class, 'createOrder']);
 // Route::post('/razorpay/create-plan', [RazorpayController::class, 'createPlan']);
@@ -75,7 +86,18 @@ Route::group(['middleware'=>['auth:sanctum']], function(){
     // Route::post('/newStock',[ProductController::class, 'newStock'])->name('newStock');
     // Route::get('/lowStock',[ProductController::class, 'lowStock'])->name('lowStock');
     // Route::post('/uploadFiles', [FileUpload::class, 'filesUpload'])->name('filesUpload');
+
+
+
+
+
 });
+
+
+
+
+
+
 
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     // Admin-specific routes can be added here
@@ -97,3 +119,65 @@ Route::get('/webhook', [WhatsAppController::class, 'verifyToken']);
  
  
 Route::get('/sendurlbuttons/{phone}', [WhatsAppController::class, 'xyz']);
+
+
+
+
+
+
+
+
+ Route::apiResource('yadnya', YadnyaController::class);  
+Route::get('yadnya/{id}/dates', [YadnyaController::class, 'getDates']);
+Route::post('/send-otp', [AuthController::class, 'sendOtp']);
+Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
+Route::post('/booking/create-order', [BookingController::class, 'createOrder']);
+Route::post('/booking/verify-payment', [BookingController::class, 'verifyPayment']);
+Route::get('/getBookedPerson', [YadnyaController::class, 'getBookedPerson']);
+    
+
+
+
+
+Route::get('/mahaprasad', [MahaprasadController::class, 'index']);
+Route::get('/mahaprasad/slots/{id}', [MahaprasadController::class, 'getSlots']);
+// Route::post('/mahaprasad/book', [MahaprasadController::class, 'book']);
+
+
+Route::middleware('auth:sanctum')->group(function () {
+
+    Route::post('/mahaprasad/book', [MahaprasadController::class, 'book']);
+    Route::get('/mahaprasad/my-bookings', [MahaprasadController::class, 'myBookings']);
+
+});
+
+
+// Admin Routes for Mahaprasad
+Route::prefix('admin/mahaprasad')->group(function () {
+    Route::get('/dates', [MahaprasadController::class, 'adminDates']);
+    Route::post('/dates', [MahaprasadController::class, 'createDate']);
+    Route::get('/dates/{id}/bookings', [MahaprasadController::class, 'dateBookings']);
+    Route::post('/bookings/{bookingId}/shift', [MahaprasadController::class, 'shiftBooking']);
+    Route::delete('/bookings/{bookingId}', [MahaprasadController::class, 'cancelBooking']);
+});
+
+
+
+
+Route::post('/admin/mahaprasad/generate-sundays', [MahaprasadController::class, 'generateCurrentMonthSundays']);
+Route::get('/admin/mahaprasad/available-dates', [MahaprasadController::class, 'availableDatesForShift']);
+// Route::get('/mahaprasad/my-bookings', [MahaprasadController::class, 'myBookings']);
+
+Route::post('/admin/mahaprasad/bookings/{id}/confirm',[MahaprasadController::class,'confirmBooking']);
+
+
+
+
+Route::post('admin/mahaprasad/bookings/{id}/confirm',
+    [MahaprasadController::class,'confirmBooking']);
+
+Route::post('admin/mahaprasad/bookings/{id}/pending',
+    [MahaprasadController::class,'pendingBooking']);
+
+Route::post('admin/mahaprasad/bookings/{id}/cancel',
+    [MahaprasadController::class,'cancelBooking']);
